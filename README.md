@@ -4,7 +4,7 @@ Competitive mobile jousting with ranked duels, tournaments, progression, and sho
 
 ## First playable prototype
 
-The repository is a Unity 6 project. Open it with Unity Hub, create or open an empty scene, and press Play. A runtime installer creates a zero-asset prototype containing:
+The repository targets Unity `6000.6.8f1`. Open it with Unity Hub, create or open an empty scene, and press Play. A runtime installer creates a zero-asset prototype containing:
 
 - A three-pass jousting match
 - Touch-drag lance aiming
