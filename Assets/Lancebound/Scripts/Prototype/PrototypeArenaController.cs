@@ -10,7 +10,7 @@ namespace Lancebound.Prototype
     public sealed class PrototypeArenaController : MonoBehaviour
     {
         private const float LaneLength = 32f;
-        private const float ImpactDistance = 1.8f;
+        private const float ImpactLongitudinalDistance = 0.35f;
         private const float RideSpeed = 9f;
 
         private JoustMatch match;
@@ -18,6 +18,7 @@ namespace Lancebound.Prototype
         private Transform opponent;
         private Transform playerLance;
         private Transform opponentLance;
+        private Transform arenaCamera;
         private float countdown;
         private float playerAim;
         private float bracePressedAt = -100f;
@@ -59,9 +60,25 @@ namespace Lancebound.Prototype
             opponent.position += Vector3.back * (RideSpeed * Time.deltaTime);
             playerLance.localRotation = Quaternion.Euler(90f + playerAim, 0f, 0f);
 
-            var distance = Vector3.Distance(player.position, opponent.position);
-            if (distance <= ImpactDistance)
+            // Riders occupy separate lanes, so lateral distance must not prevent an impact.
+            // Detect the moment their positions meet along the direction of travel instead.
+            var longitudinalDistance = Mathf.Abs(player.position.z - opponent.position.z);
+            if (longitudinalDistance <= ImpactLongitudinalDistance || player.position.z >= opponent.position.z)
                 ResolvePass();
+        }
+
+        private void LateUpdate()
+        {
+            if (arenaCamera == null || player == null || opponent == null)
+                return;
+
+            var focus = Vector3.Lerp(player.position, opponent.position, 0.5f);
+            var desiredPosition = focus + new Vector3(-10.5f, 6.8f, -7.5f);
+            arenaCamera.position = Vector3.Lerp(arenaCamera.position, desiredPosition, 5f * Time.unscaledDeltaTime);
+            arenaCamera.rotation = Quaternion.Slerp(
+                arenaCamera.rotation,
+                Quaternion.LookRotation(focus + Vector3.up - arenaCamera.position),
+                7f * Time.unscaledDeltaTime);
         }
 
         private void ResolvePass()
@@ -191,6 +208,8 @@ namespace Lancebound.Prototype
         {
             player.position = new Vector3(-1.15f, 1f, -LaneLength * 0.5f);
             opponent.position = new Vector3(1.15f, 1f, LaneLength * 0.5f);
+            player.rotation = Quaternion.identity;
+            opponent.rotation = Quaternion.Euler(0f, 180f, 0f);
             playerAim = 12f;
             bracePressedAt = -100f;
             countdown = 3f;
@@ -215,6 +234,7 @@ namespace Lancebound.Prototype
 
             var cameraObject = new GameObject("Main Camera");
             var arenaCamera = cameraObject.AddComponent<Camera>();
+            this.arenaCamera = cameraObject.transform;
             cameraObject.tag = "MainCamera";
             cameraObject.transform.position = new Vector3(-11f, 7.5f, -9f);
             cameraObject.transform.rotation = Quaternion.Euler(18f, 42f, 0f);

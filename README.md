@@ -20,6 +20,8 @@ The primitive geometry is intentional: it lets us validate whether the charge, a
 - Mobile: drag vertically on the right side to aim; tap **Brace** shortly before impact.
 - Editor: drag vertically with the mouse to aim and press Space to brace.
 
+The camera follows the center of the charge. Impact is resolved when the riders cross along the lane, regardless of their lateral separation on opposite sides of the tilt barrier.
+
 ## Project direction
 
 Android is the first target, with iOS planned from the same Unity project. Live multiplayer, accounts, ranked matchmaking, tournaments, progression, and cosmetic inventory will be added around the deterministic match rules in `JoustMatch`.
